@@ -18,6 +18,8 @@ export const metadata: Metadata = {
     "Paste a GitHub URL and let Gemini-powered AI break down the architecture, analyze files, and explain functions for you.",
 };
 
+export const maxDuration = 60; // Allow server actions and routes under this layout to run up to 60s on Vercel Hobby plan
+
 export default function RootLayout({
   children,
 }: Readonly<{
