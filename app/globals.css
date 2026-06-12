@@ -1,0 +1,90 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+}
+
+/* ── Base reset ─────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: #060608;
+  color: #e2e8f0;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────────────────── */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+/* ── Skeleton pulse ─────────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 50%,
+    rgba(255, 255, 255, 0.04) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s ease-in-out infinite;
+  border-radius: 8px;
+}
+
+/* ── Typing cursor ──────────────────────────────────────── */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.typing-cursor::after {
+  content: "▋";
+  animation: blink 1s step-end infinite;
+  color: #818cf8;
+  margin-left: 2px;
+}
+
+/* ── Progress bar ───────────────────────────────────────── */
+@keyframes progress-indeterminate {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(400%); }
+}
+.progress-bar {
+  animation: progress-indeterminate 1.5s ease-in-out infinite;
+}
+
+/* ── File icon colors by extension ──────────────────────── */
+.file-icon-py { color: #3b82f6; }
+.file-icon-ts,
+.file-icon-tsx { color: #3178c6; }
+.file-icon-js,
+.file-icon-jsx { color: #f7df1e; }
+.file-icon-json { color: #6b7280; }
+.file-icon-md { color: #9ca3af; }
+.file-icon-css { color: #38bdf8; }
+.file-icon-html { color: #f97316; }
+.file-icon-go { color: #00add8; }
+.file-icon-rs { color: #dea584; }
+.file-icon-java { color: #ea2d2e; }
+.file-icon-rb { color: #cc342d; }
+.file-icon-php { color: #777bb4; }
+.file-icon-default { color: #64748b; }
