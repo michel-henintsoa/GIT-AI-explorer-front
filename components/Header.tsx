@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { GitBranch } from "lucide-react";
 import Image from "next/image";
+import { AuthButton } from "./AuthButton";
 
 export function Header() {
   return (
@@ -25,6 +26,9 @@ export function Header() {
       <p className="text-slate-400 max-w-xl text-base sm:text-lg leading-relaxed">
         Paste a GitHub URL and let <span className="text-orange-400 font-medium">Gemini AI</span> break down the architecture, files, and functions for you.
       </p>
+      <div className="mt-6">
+        <AuthButton />
+      </div>
     </motion.header>
   );
 }

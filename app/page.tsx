@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { Loader2, ShieldAlert, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -9,6 +9,8 @@ import { StepIndicator } from "@/components/StepIndicator";
 import { SearchForm } from "@/components/SearchForm";
 import { Sidebar } from "@/components/Sidebar";
 import { MainContent } from "@/components/MainContent";
+import { AuthProvider, useAuth } from "./auth-context";
+import { UserRepos } from "@/components/UserRepos";
 
 import {
   fetchSummary,
@@ -18,7 +20,8 @@ import {
   fetchFunctionExplanation
 } from "./actions";
 
-export default function Home() {
+function HomeContent() {
+  const { user } = useAuth();
   const [repoUrl, setRepoUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,11 +42,45 @@ export default function Home() {
   const [isLoadingFunction, setIsLoadingFunction] = useState(false);
   
   const [summaryCollapsed, setSummaryCollapsed] = useState(false);
+  const [userRepos, setUserRepos] = useState<any[]>([]);
 
   const contentRef = useRef<HTMLDivElement>(null);
   const fileExplRef = useRef<HTMLDivElement>(null);
 
   const currentStep = summaryData ? (selectedFile ? 2 : 1) : 0;
+
+  // Récupérer l'historique des repos de l'utilisateur
+  useEffect(() => {
+    async function fetchRepos() {
+      if (!user) {
+        setUserRepos([]);
+        return;
+      }
+      try {
+        const token = localStorage.getItem("session_token");
+        if (!token) {
+          setUserRepos([]);
+          return;
+        }
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL || "http://127.0.0.1:8000"}/github/user/repos`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (res.ok) {
+          const data = await res.json();
+          setUserRepos(data.repos || []);
+        } else {
+          setUserRepos([]);
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement de l'historique:", err);
+        setUserRepos([]);
+      }
+    }
+    fetchRepos();
+  }, [user]);
 
   const filteredFiles = useMemo(() => {
     if (!fileFilter) return files;
@@ -140,6 +177,11 @@ export default function Home() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
         <Header />
 
+        {/* Historique des repositories */}
+        <div className="mb-6 max-w-3xl mx-auto">
+          <UserRepos />
+        </div>
+
         {/* <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
           <StepIndicator current={currentStep} />
         </motion.div> */}
@@ -207,6 +249,7 @@ export default function Home() {
                 setFileFilter={setFileFilter}
                 selectedFile={selectedFile}
                 handleFileSelect={handleFileSelect}
+                userRepos={userRepos}
               />
               <MainContent 
                 summaryData={summaryData}
@@ -228,5 +271,13 @@ export default function Home() {
         </AnimatePresence>
       </main>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <AuthProvider>
+      <HomeContent />
+    </AuthProvider>
   );
 }

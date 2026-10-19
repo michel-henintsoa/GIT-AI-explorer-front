@@ -1,4 +1,5 @@
 import { Terminal, FolderOpen, Filter, X, FileCode2, ArrowRight } from "lucide-react";
+import { UserRepos } from "./UserRepos";
 
 interface SidebarProps {
   summaryData: any;
@@ -8,6 +9,7 @@ interface SidebarProps {
   setFileFilter: (v: string) => void;
   selectedFile: string | null;
   handleFileSelect: (path: string) => void;
+  userRepos?: any[];
 }
 
 function getFileExt(f: string) {
@@ -32,17 +34,50 @@ export function Sidebar({
   fileFilter,
   setFileFilter,
   selectedFile,
-  handleFileSelect
+  handleFileSelect,
+  userRepos
 }: SidebarProps) {
   return (
     <aside className="lg:col-span-4 xl:col-span-3 space-y-4 lg:sticky lg:top-6 lg:self-start lg:max-h-[calc(100vh-3rem)] lg:overflow-hidden lg:flex lg:flex-col">
+      {/* Historique des repositories */}
+      {userRepos && (
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
+            <FolderOpen className="w-3.5 h-3.5" /> Mon historique
+          </h3>
+          {userRepos.length === 0 ? (
+            <p className="text-xs text-slate-600 text-center py-2">Aucun repository dans l'historique</p>
+          ) : (
+            <div className="space-y-2">
+              {userRepos.map(repo => (
+                <div
+                  key={repo.id}
+                  className="flex items-center gap-2 p-2 bg-white/5 rounded-lg hover:bg-white/10 transition-colors group"
+                >
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-mono text-slate-300 truncate">{repo.owner}/{repo.repo_name}</p>
+                    <p className="text-[10px] text-slate-600">{new Date(repo.last_used_at).toLocaleDateString("fr-FR")}</p>
+                  </div>
+                  <button
+                    onClick={() => window.location.href = `/?repo_url=${encodeURIComponent(repo.repo_url)}`}
+                    className="text-[10px] px-2 py-1 bg-green-500/20 text-green-400 rounded hover:bg-green-500/30 transition-colors"
+                  >
+                    Recloner
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Tech Stack */}
       <div className="bg-white/3 border border-white/15 rounded-xl p-4">
         <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-3 flex items-center gap-2">
           <Terminal className="w-3.5 h-3.5" /> Tech Stack
         </h3>
         <div className="flex flex-wrap gap-1.5">
-          {summaryData.analysis?.technologies?.length > 0 ? (
+          {summaryData?.analysis?.technologies?.length > 0 ? (
             summaryData.analysis.technologies.map((tech: string) => (
               <span key={tech} className="px-2.5 py-1 bg-blue-500/15 text-blue-300 border border-blue-500/30 rounded-md text-[11px] font-medium">
                 {tech}
